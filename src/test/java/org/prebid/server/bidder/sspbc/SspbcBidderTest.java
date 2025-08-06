@@ -1,15 +1,12 @@
 package org.prebid.server.bidder.sspbc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.iab.openrtb.request.Banner;
 import com.iab.openrtb.request.BidRequest;
-import com.iab.openrtb.request.Format;
 import com.iab.openrtb.request.Imp;
 import com.iab.openrtb.request.Site;
 import com.iab.openrtb.response.Bid;
 import com.iab.openrtb.response.BidResponse;
 import com.iab.openrtb.response.SeatBid;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.prebid.server.VertxTest;
 import org.prebid.server.bidder.model.BidderBid;
@@ -17,9 +14,7 @@ import org.prebid.server.bidder.model.BidderCall;
 import org.prebid.server.bidder.model.BidderError;
 import org.prebid.server.bidder.model.HttpRequest;
 import org.prebid.server.bidder.model.HttpResponse;
-import org.prebid.server.bidder.model.Result;
-import org.prebid.server.proto.openrtb.ext.ExtPrebid;
-import org.prebid.server.proto.openrtb.ext.request.sspbc.ExtImpSspbc;
+import org.prebid.server.bidder.model.Result; 
 import org.prebid.server.proto.openrtb.ext.response.BidType;
 
 import java.util.List;
@@ -47,7 +42,7 @@ public class SspbcBidderTest extends VertxTest {
         final BidRequest bidRequest = givenBidRequest(identity());
 
         // when
-        final Result<List<HttpRequest<BidRequest>>> result = target.makeHttpRequests(bidRequest);
+        final Result<List<HttpRequest<SspbcRequest>>> result = target.makeHttpRequests(bidRequest);
 
         // then
         assertThat(result.getErrors()).isEmpty();
@@ -59,7 +54,7 @@ public class SspbcBidderTest extends VertxTest {
     @Test
     public void makeBidsShouldReturnErrorIfResponseBodyCouldNotBeParsed() {
         // given
-        final BidderCall<BidRequest> httpCall = givenHttpCall(null, "invalid");
+        final BidderCall<SspbcRequest> httpCall = givenHttpCall(null, "invalid");
 
         // when
         final Result<List<BidderBid>> result = target.makeBids(httpCall, null);
@@ -76,7 +71,7 @@ public class SspbcBidderTest extends VertxTest {
     @Test
     public void makeBidsShouldReturnEmptyListIfBidResponseIsNull() throws JsonProcessingException {
         // given
-        final BidderCall<BidRequest> httpCall = givenHttpCall(null, mapper.writeValueAsString(null));
+        final BidderCall<SspbcRequest> httpCall = givenHttpCall(null, mapper.writeValueAsString(null));
 
         // when
         final Result<List<BidderBid>> result = target.makeBids(httpCall, null);
@@ -87,24 +82,9 @@ public class SspbcBidderTest extends VertxTest {
     }
 
     @Test
-    public void makeBidsShouldReturnErrorWhenImpIdNotEqualsBidImpId() throws JsonProcessingException {
-        // given
-        final BidderCall<BidRequest> httpCall = givenHttpCall(givenBidRequest(identity()),
-                mapper.writeValueAsString(givenBidResponse(bidBuilder -> bidBuilder.adm("Any adm"))));
-
-        // when
-        final Result<List<BidderBid>> result = target.makeBids(httpCall, null);
-
-        // then
-        assertThat(result.getValue()).isEmpty();
-        assertThat(result.getErrors())
-                .containsExactly(BidderError.badServerResponse("imp not found"));
-    }
-
-    @Test
     public void makeBidsShouldReturnErrorWhenAdmIsEmpty() throws JsonProcessingException {
         // given
-        final BidderCall<BidRequest> httpCall = givenHttpCall(givenBidRequest(identity(),
+        final BidderCall<SspbcRequest> httpCall = givenHttpCall(givenBidRequest(identity(),
                         impBuilder -> impBuilder.id("id").tagid("tagId")),
                 mapper.writeValueAsString(givenBidResponse(bidBuilder ->
                         bidBuilder
@@ -123,7 +103,7 @@ public class SspbcBidderTest extends VertxTest {
     @Test
     public void makeBidsShouldReturnErrorWhenMTypeIsIncorrect() throws JsonProcessingException {
         // given
-        final BidderCall<BidRequest> httpCall = givenHttpCall(givenBidRequest(identity(),
+        final BidderCall<SspbcRequest> httpCall = givenHttpCall(givenBidRequest(identity(),
                         impBuilder -> impBuilder.id("id").tagid("tagId")),
                 mapper.writeValueAsString(givenBidResponse(bidBuilder ->
                         bidBuilder
@@ -137,13 +117,13 @@ public class SspbcBidderTest extends VertxTest {
         // then
         assertThat(result.getValue()).isEmpty();
         assertThat(result.getErrors())
-                .containsExactly(BidderError.badServerResponse("Bid type not supported: 100."));
+                .containsExactly(BidderError.badServerResponse("unsupported MType: 100."));
     }
 
     @Test
     public void makeBidsShouldParseBid() throws JsonProcessingException {
         // given
-        final BidderCall<BidRequest> httpCall = givenHttpCall(givenBidRequest(
+        final BidderCall<SspbcRequest> httpCall = givenHttpCall(givenBidRequest(
                         bidRequestBuilder -> bidRequestBuilder
                                 .id("bidRequestId")
                                 .site(Site.builder()
@@ -155,7 +135,7 @@ public class SspbcBidderTest extends VertxTest {
                         bidBuilder
                                 .impid("id")
                                 .adm("anyAdm")
-                                .mtype(BidType.banner.ordinal()))));
+                                .mtype(1))));
 
         // when
         final Result<List<BidderBid>> result = target.makeBids(httpCall, null);
@@ -197,9 +177,9 @@ public class SspbcBidderTest extends VertxTest {
                 .build();
     }
 
-    private static BidderCall<BidRequest> givenHttpCall(BidRequest bidRequest, String body) {
+    private static BidderCall<SspbcRequest> givenHttpCall(BidRequest bidRequest, String body) {
         return BidderCall.succeededHttp(
-                HttpRequest.<BidRequest>builder().payload(bidRequest).build(),
+                HttpRequest.<SspbcRequest>builder().payload(SspbcRequest.of(bidRequest)).build(),
                 HttpResponse.of(200, null, body),
                 null);
     }
