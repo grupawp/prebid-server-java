@@ -8,5 +8,5 @@ import lombok.Value;
 public class SspbcRequest {
 
     @JsonProperty("bidRequest")
-    BidRequest BidRequest;
+    BidRequest bidRequest;
 }
