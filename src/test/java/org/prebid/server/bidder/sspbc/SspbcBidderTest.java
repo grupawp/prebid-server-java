@@ -52,6 +52,20 @@ public class SspbcBidderTest extends VertxTest {
     }
 
     @Test
+    public void makeHttpRequestsShouldCreateValidPayload() {
+        // given
+        final BidRequest bidRequest = givenBidRequest(identity());
+
+        //when
+        final Result<List<HttpRequest<SspbcRequest>>> result = target.makeHttpRequests(bidRequest);
+
+        // then
+        assertThat(result.getErrors()).isEmpty();
+        assertThat(result.getValue()).hasSize(1);
+        assertThat(result.getValue().getFirst().getPayload()).isEqualTo(SspbcRequest.of(bidRequest));
+    }
+
+    @Test
     public void makeBidsShouldReturnErrorIfResponseBodyCouldNotBeParsed() {
         // given
         final BidderCall<SspbcRequest> httpCall = givenHttpCall(null, "invalid");
