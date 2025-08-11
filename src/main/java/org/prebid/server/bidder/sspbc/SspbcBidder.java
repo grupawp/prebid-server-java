@@ -34,7 +34,7 @@ public class SspbcBidder implements Bidder<SspbcRequest> {
     private final JacksonMapper mapper;
 
     public SspbcBidder(String endpointUrl, JacksonMapper mapper) {
-        this.endpointUrl = HttpUtil.validateUrlSyntax(Objects.requireNonNull(endpointUrl));
+        this.endpointUrl = HttpUtil.validateUrl(Objects.requireNonNull(endpointUrl));
         this.mapper = Objects.requireNonNull(mapper);
     }
 
