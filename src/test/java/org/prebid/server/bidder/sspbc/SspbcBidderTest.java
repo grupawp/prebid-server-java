@@ -62,7 +62,6 @@ public class SspbcBidderTest extends VertxTest {
         // then
         assertThat(result.getErrors()).isEmpty();
         assertThat(result.getValue()).hasSize(1);
-//        assertThat(result.getValue().getFirst().getPayload()).isEqualTo(SspbcRequest.of(bidRequest));
     }
 
     @Test
