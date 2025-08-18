@@ -1,5 +1,6 @@
 {
   "bidRequest" : {
+    "test": 1,
     "id": "request_id",
     "imp": [
       {

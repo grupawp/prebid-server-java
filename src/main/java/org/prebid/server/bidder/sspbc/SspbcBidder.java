@@ -44,7 +44,7 @@ public class SspbcBidder implements Bidder<SspbcRequest> {
     }
 
     private HttpRequest<SspbcRequest> createHttpRequest(BidRequest request) {
-        final SspbcRequest outgoingRequest = SspbcRequest.of(request);
+        final SspbcRequest outgoingRequest = SspbcRequest.of(request.toBuilder().test(1).build());
         return HttpRequest.<SspbcRequest>builder()
                 .method(HttpMethod.POST)
                 .uri(makeUrl(endpointUrl))
