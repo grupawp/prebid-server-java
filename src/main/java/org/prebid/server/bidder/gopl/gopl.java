@@ -1,4 +1,4 @@
-package org.prebid.server.bidder.sspbc;
+package org.prebid.server.bidder.gopl;
 
 import com.iab.openrtb.request.BidRequest;
 import com.iab.openrtb.response.Bid;
@@ -26,26 +26,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class SspbcBidder implements Bidder<SspbcRequest> {
+public class gopl implements Bidder<goplRequest> {
 
     private static final String ADAPTER_VERSION = "6.0";
 
     private final String endpointUrl;
     private final JacksonMapper mapper;
 
-    public SspbcBidder(String endpointUrl, JacksonMapper mapper) {
+    public gopl(String endpointUrl, JacksonMapper mapper) {
         this.endpointUrl = HttpUtil.validateUrl(Objects.requireNonNull(endpointUrl));
         this.mapper = Objects.requireNonNull(mapper);
     }
 
     @Override
-    public Result<List<HttpRequest<SspbcRequest>>> makeHttpRequests(BidRequest request) {
+    public Result<List<HttpRequest<goplRequest>>> makeHttpRequests(BidRequest request) {
         return Result.withValue(createHttpRequest(request));
     }
 
-    private HttpRequest<SspbcRequest> createHttpRequest(BidRequest request) {
-        final SspbcRequest outgoingRequest = SspbcRequest.of(request);
-        return HttpRequest.<SspbcRequest>builder()
+    private HttpRequest<goplRequest> createHttpRequest(BidRequest request) {
+        final goplRequest outgoingRequest = goplRequest.of(request);
+        return HttpRequest.<goplRequest>builder()
                 .method(HttpMethod.POST)
                 .uri(makeUrl(endpointUrl))
                 .headers(HttpUtil.headers())
@@ -67,7 +67,7 @@ public class SspbcBidder implements Bidder<SspbcRequest> {
     }
 
     @Override
-    public Result<List<BidderBid>> makeBids(BidderCall<SspbcRequest> httpCall, BidRequest bidRequest) {
+    public Result<List<BidderBid>> makeBids(BidderCall<goplRequest> httpCall, BidRequest bidRequest) {
         try {
             final BidResponse bidResponse = mapper.decodeValue(httpCall.getResponse().getBody(), BidResponse.class);
             return Result.withValues(extractBids(bidResponse));
