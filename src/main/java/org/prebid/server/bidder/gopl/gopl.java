@@ -26,14 +26,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class gopl implements Bidder<goplRequest> {
+public class Gopl implements Bidder<GoplRequest> {
 
     private static final String ADAPTER_VERSION = "6.0";
 
     private final String endpointUrl;
     private final JacksonMapper mapper;
 
-    public gopl(String endpointUrl, JacksonMapper mapper) {
+    public Gopl(String endpointUrl, JacksonMapper mapper) {
         this.endpointUrl = HttpUtil.validateUrl(Objects.requireNonNull(endpointUrl));
         this.mapper = Objects.requireNonNull(mapper);
     }

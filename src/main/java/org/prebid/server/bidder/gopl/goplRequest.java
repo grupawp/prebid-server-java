@@ -5,7 +5,7 @@ import com.iab.openrtb.request.BidRequest;
 import lombok.Value;
 
 @Value(staticConstructor = "of")
-public class goplRequest {
+public class GoplRequest {
 
     @JsonProperty("bidRequest")
     BidRequest bidRequest;
