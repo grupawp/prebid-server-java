@@ -29,11 +29,11 @@ public class GoplBidderTest extends VertxTest {
 
     private static final String ENDPOINT_URL = "https://randomurl.com";
 
-    private final gopl target = new gopl(ENDPOINT_URL, jacksonMapper);
+    private final Gopl target = new Gopl(ENDPOINT_URL, jacksonMapper);
 
     @Test
     public void creationShouldFailOnInvalidEndpointUrl() {
-        assertThatIllegalArgumentException().isThrownBy(() -> new gopl("invalid_url", jacksonMapper));
+        assertThatIllegalArgumentException().isThrownBy(() -> new Gopl("invalid_url", jacksonMapper));
     }
 
     @Test
@@ -42,7 +42,7 @@ public class GoplBidderTest extends VertxTest {
         final BidRequest bidRequest = givenBidRequest(identity());
 
         // when
-        final Result<List<HttpRequest<goplRequest>>> result = target.makeHttpRequests(bidRequest);
+        final Result<List<HttpRequest<GoplRequest>>> result = target.makeHttpRequests(bidRequest);
 
         // then
         assertThat(result.getErrors()).isEmpty();
@@ -57,18 +57,18 @@ public class GoplBidderTest extends VertxTest {
         final BidRequest bidRequest = givenBidRequest(identity());
 
         //when
-        final Result<List<HttpRequest<goplRequest>>> result = target.makeHttpRequests(bidRequest);
+        final Result<List<HttpRequest<GoplRequest>>> result = target.makeHttpRequests(bidRequest);
 
         // then
         assertThat(result.getErrors()).isEmpty();
         assertThat(result.getValue()).hasSize(1);
-        assertThat(result.getValue().getFirst().getPayload()).isEqualTo(goplRequest.of(bidRequest));
+        assertThat(result.getValue().getFirst().getPayload()).isEqualTo(GoplRequest.of(bidRequest));
     }
 
     @Test
     public void makeBidsShouldReturnErrorIfResponseBodyCouldNotBeParsed() {
         // given
-        final BidderCall<goplRequest> httpCall = givenHttpCall(null, "invalid");
+        final BidderCall<GoplRequest> httpCall = givenHttpCall(null, "invalid");
 
         // when
         final Result<List<BidderBid>> result = target.makeBids(httpCall, null);
@@ -85,7 +85,7 @@ public class GoplBidderTest extends VertxTest {
     @Test
     public void makeBidsShouldReturnEmptyListIfBidResponseIsNull() throws JsonProcessingException {
         // given
-        final BidderCall<goplRequest> httpCall = givenHttpCall(null, mapper.writeValueAsString(null));
+        final BidderCall<GoplRequest> httpCall = givenHttpCall(null, mapper.writeValueAsString(null));
 
         // when
         final Result<List<BidderBid>> result = target.makeBids(httpCall, null);
@@ -98,7 +98,7 @@ public class GoplBidderTest extends VertxTest {
     @Test
     public void makeBidsShouldReturnErrorWhenAdmIsEmpty() throws JsonProcessingException {
         // given
-        final BidderCall<goplRequest> httpCall = givenHttpCall(givenBidRequest(identity(),
+        final BidderCall<GoplRequest> httpCall = givenHttpCall(givenBidRequest(identity(),
                         impBuilder -> impBuilder.id("id").tagid("tagId")),
                 mapper.writeValueAsString(givenBidResponse(bidBuilder ->
                         bidBuilder
@@ -117,7 +117,7 @@ public class GoplBidderTest extends VertxTest {
     @Test
     public void makeBidsShouldReturnErrorWhenMTypeIsIncorrect() throws JsonProcessingException {
         // given
-        final BidderCall<goplRequest> httpCall = givenHttpCall(givenBidRequest(identity(),
+        final BidderCall<GoplRequest> httpCall = givenHttpCall(givenBidRequest(identity(),
                         impBuilder -> impBuilder.id("id").tagid("tagId")),
                 mapper.writeValueAsString(givenBidResponse(bidBuilder ->
                         bidBuilder
@@ -137,7 +137,7 @@ public class GoplBidderTest extends VertxTest {
     @Test
     public void makeBidsShouldParseBid() throws JsonProcessingException {
         // given
-        final BidderCall<goplRequest> httpCall = givenHttpCall(givenBidRequest(
+        final BidderCall<GoplRequest> httpCall = givenHttpCall(givenBidRequest(
                         bidRequestBuilder -> bidRequestBuilder
                                 .id("bidRequestId")
                                 .site(Site.builder()
@@ -191,9 +191,9 @@ public class GoplBidderTest extends VertxTest {
                 .build();
     }
 
-    private static BidderCall<goplRequest> givenHttpCall(BidRequest bidRequest, String body) {
+    private static BidderCall<GoplRequest> givenHttpCall(BidRequest bidRequest, String body) {
         return BidderCall.succeededHttp(
-                HttpRequest.<goplRequest>builder().payload(goplRequest.of(bidRequest)).build(),
+                HttpRequest.<GoplRequest>builder().payload(GoplRequest.of(bidRequest)).build(),
                 HttpResponse.of(200, null, body),
                 null);
     }

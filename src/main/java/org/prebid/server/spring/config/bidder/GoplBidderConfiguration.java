@@ -1,7 +1,7 @@
 package org.prebid.server.spring.config.bidder;
 
 import org.prebid.server.bidder.BidderDeps;
-import org.prebid.server.bidder.gopl.gopl;
+import org.prebid.server.bidder.gopl.Gopl;
 import org.prebid.server.json.JacksonMapper;
 import org.prebid.server.spring.config.bidder.model.BidderConfigurationProperties;
 import org.prebid.server.spring.config.bidder.util.BidderDepsAssembler;
@@ -35,7 +35,7 @@ public class GoplBidderConfiguration {
         return BidderDepsAssembler.forBidder(BIDDER_NAME)
                 .withConfig(goplConfigurationProperties)
                 .usersyncerCreator(UsersyncerCreator.create(externalUrl))
-                .bidderCreator(config -> new gopl(config.getEndpoint(), mapper))
+                .bidderCreator(config -> new Gopl(config.getEndpoint(), mapper))
                 .assemble();
     }
 }

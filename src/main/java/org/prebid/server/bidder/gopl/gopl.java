@@ -39,13 +39,13 @@ public class Gopl implements Bidder<GoplRequest> {
     }
 
     @Override
-    public Result<List<HttpRequest<goplRequest>>> makeHttpRequests(BidRequest request) {
+    public Result<List<HttpRequest<GoplRequest>>> makeHttpRequests(BidRequest request) {
         return Result.withValue(createHttpRequest(request));
     }
 
-    private HttpRequest<goplRequest> createHttpRequest(BidRequest request) {
-        final goplRequest outgoingRequest = goplRequest.of(request);
-        return HttpRequest.<goplRequest>builder()
+    private HttpRequest<GoplRequest> createHttpRequest(BidRequest request) {
+        final GoplRequest outgoingRequest = GoplRequest.of(request);
+        return HttpRequest.<GoplRequest>builder()
                 .method(HttpMethod.POST)
                 .uri(makeUrl(endpointUrl))
                 .headers(HttpUtil.headers())
@@ -67,7 +67,7 @@ public class Gopl implements Bidder<GoplRequest> {
     }
 
     @Override
-    public Result<List<BidderBid>> makeBids(BidderCall<goplRequest> httpCall, BidRequest bidRequest) {
+    public Result<List<BidderBid>> makeBids(BidderCall<GoplRequest> httpCall, BidRequest bidRequest) {
         try {
             final BidResponse bidResponse = mapper.decodeValue(httpCall.getResponse().getBody(), BidResponse.class);
             return Result.withValues(extractBids(bidResponse));
