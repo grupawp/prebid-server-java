@@ -1,2 +1,23 @@
+<<<<<<< HEAD
 aliasOf: gopl
 gvlVendorID: 676
+=======
+adapters:
+  sspbc:
+    endpoint: https://ssp.wp.pl/v2/bidder/prebidserver
+    meta-info:
+      maintainer-email: prebid-dev@grupawp.pl
+      app-media-types:
+      site-media-types:
+        - banner
+      supported-vendors:
+      vendor-id: 676
+    usersync:
+      cookie-family-name: sspbc
+      iframe:
+        url: https://ssp.wp.pl/bidder/usersync?tcf=2&redirect={redirect_url}
+        uid-macro: '$UID'
+      redirect:
+        url: https://ssp.wp.pl/v1/sync/prebid-server/pixel?gdpr={gdpr}&gdpr_consent={gdpr_consent}&redirect={redirect_url}
+        uid-macro: '$UID'
+>>>>>>> 6b5f04d69f1dafda5b6b1d9d4241f65a9622dac2
